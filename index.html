@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatBot AI Assistant</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Sidebar removed --> <!-- Main Chat Window -->
+    <main class="chat-window">
+      <!-- Header -->
+      <header class="chat-header">
+        <div class="bot-info">
+          <div class="avatar-container">
+            <img src="images/bot_avatar.png" alt="Bot Avatar" class="bot-avatar">
+            <span class="status-indicator"></span>
+          </div>
+          <div class="bot-details">
+            <h2 class="bot-name">ChatBot AI</h2>
+            <span class="bot-status-text">Online</span>
+          </div>
+        </div>
+        <button class="header-action-btn" title="Clear Chat">
+          <i data-lucide="trash-2"></i>
+        </button>
+      </header>
+
+      <!-- Chat History -->
+      <div class="chat-history" id="chatHistory">
+      </div>
+
+      <!-- Typing Indicator (hidden by default) -->
+      <div class="typing-indicator-container" id="typingIndicator">
+        <img src="images/bot_avatar.png" alt="Bot" class="message-avatar">
+        <div class="typing-bubble">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <footer class="chat-input-area">
+
+        <form class="input-form" id="chatForm">
+          <input type="text" id="userInput" class="text-input" placeholder="Type your message..." autocomplete="off">
+          <button type="submit" class="send-btn" id="sendBtn" disabled>
+            <i data-lucide="send"></i>
+          </button>
+        </form>
+      </footer>
+    </main>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
