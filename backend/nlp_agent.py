@@ -20,13 +20,15 @@ class NLPAgent:
         system_instruction = (
             "You are an expert NLP preprocessing agent. Your task is to clean and normalize user input. "
             "You must correct spelling, fix grammar, normalize the sentence, and detect the user's intent. "
+            "Crucially, you must extract the best 'wikipedia_search_query' which is the exact Wikipedia article title that would directly answer the user's prompt (e.g. if user asks 'capital of india', the best article is 'New Delhi'. If 'who is elon musk', the article is 'Elon Musk'). "
             "You MUST respond ONLY with a valid, raw JSON object and no surrounding text, markdown formatting, or explanations. "
             "The JSON MUST exactly match this schema:\n"
             "{\n"
             '  "original_input": "<the exact original user text>",\n'
             '  "corrected_input": "<the text with corrected spelling and grammar>",\n'
             '  "normalized_input": "<lowercase, punctuation-stripped, and standardized version of the text>",\n'
-            '  "intent": "<a short string describing the user intent>",\n'
+            '  "intent": "<short string: MUST be either \\"factual\\", \\"definition\\", \\"greeting\\", \\"small talk\\", or \\"long explanation\\">",\n'
+            '  "wikipedia_search_query": "<the exact Wikipedia article title to search for>",\n'
             '  "confidence": <a float between 0.0 and 1.0 representing intent confidence>,\n'
             '  "errors_detected": {\n'
             '    "spelling": <true/false>,\n'
@@ -73,7 +75,7 @@ class NLPAgent:
     def parse_response(self, raw_response: str, original_input: str) -> dict:
         try:
             parsed_data = json.loads(raw_response)
-            required_keys = ["original_input", "corrected_input", "normalized_input", "intent", "confidence", "errors_detected"]
+            required_keys = ["original_input", "corrected_input", "normalized_input", "intent", "wikipedia_search_query", "confidence", "errors_detected"]
             for key in required_keys:
                 if key not in parsed_data:
                     parsed_data[key] = None
@@ -87,6 +89,7 @@ class NLPAgent:
                 "corrected_input": original_input,
                 "normalized_input": original_input.lower().strip(),
                 "intent": "unknown",
+                "wikipedia_search_query": original_input.lower().strip(),
                 "confidence": 0.0,
                 "errors_detected": {"spelling": False, "grammar": False, "clarity": False},
                 "system_error": "Failed to parse LLM response"

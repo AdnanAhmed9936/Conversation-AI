@@ -52,7 +52,14 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ text: text })
       });
       
-      const data = await response.json();
+      const contentType = response.headers.get("content-type");
+      let data;
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
+      
       hideTypingIndicator();
       addBotMessage(data);
     } catch (error) {
@@ -81,13 +88,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgDiv = document.createElement('div');
     msgDiv.className = 'message bot-message';
     
-    // Format JSON output
-    const jsonString = JSON.stringify(data, null, 2);
+    // Extract the text to display. Fallback to stringified JSON if it's an unexpected format.
+    let textToShow = "";
+    if (data && data.final_response) {
+      textToShow = data.final_response;
+    } else if (data && data.error) {
+      textToShow = data.error;
+    } else {
+      textToShow = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+    }
     
     msgDiv.innerHTML = `
       <img src="images/bot_avatar.png" alt="Bot" class="message-avatar">
       <div class="message-content">
-        <pre>${escapeHTML(jsonString)}</pre>
+        <p>${escapeHTML(textToShow)}</p>
         <span class="timestamp">${getCurrentTime()}</span>
       </div>
     `;
