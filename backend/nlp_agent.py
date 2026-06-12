@@ -19,16 +19,20 @@ class NLPAgent:
     def build_prompt(self, user_text: str) -> list:
         system_instruction = (
             "You are an expert NLP preprocessing agent. Your task is to clean and normalize user input. "
+            "You must analyze the COMPLETE query, paying careful attention to all words, context modifiers (such as time like 'today', 'latest', 'current', 'now', or locations, or other qualifiers), rather than just the first keyword. "
             "You must correct spelling, fix grammar, normalize the sentence, and detect the user's intent. "
-            "Crucially, you must extract the best 'wikipedia_search_query' which is the exact Wikipedia article title that would directly answer the user's prompt (e.g. if user asks 'capital of india', the best article is 'New Delhi'. If 'who is elon musk', the article is 'Elon Musk'). "
+            "Identify the user's intent from the full query context. "
+            "If the query asks for real-time, current, live information, weather, or current events (e.g., 'news today', 'weather in London', 'latest movies'), "
+            "classify the intent as 'real-time' and set 'wikipedia_search_query' to null. "
+            "Crucially, for factual/definition queries, extract the best 'wikipedia_search_query' which is the exact Wikipedia article title that would directly answer the user's prompt (e.g. if user asks 'capital of india', the best article is 'New Delhi'. If 'who is elon musk', the article is 'Elon Musk'. If 'capital of France', the best article is 'Paris'). "
             "You MUST respond ONLY with a valid, raw JSON object and no surrounding text, markdown formatting, or explanations. "
             "The JSON MUST exactly match this schema:\n"
             "{\n"
             '  "original_input": "<the exact original user text>",\n'
             '  "corrected_input": "<the text with corrected spelling and grammar>",\n'
             '  "normalized_input": "<lowercase, punctuation-stripped, and standardized version of the text>",\n'
-            '  "intent": "<short string: MUST be either \\"factual\\", \\"definition\\", \\"greeting\\", \\"small talk\\", or \\"long explanation\\">",\n'
-            '  "wikipedia_search_query": "<the exact Wikipedia article title to search for>",\n'
+            '  "intent": "<short string: MUST be either \\"factual\\", \\"definition\\", \\"greeting\\", \\"small talk\\", \\"long explanation\\", or \\"real-time\\">",\n'
+            '  "wikipedia_search_query": "<the exact Wikipedia article title to search for, or null if it cannot be answered by static Wikipedia articles, e.g. for real-time/live/opinion/weather/current queries>",\n'
             '  "confidence": <a float between 0.0 and 1.0 representing intent confidence>,\n'
             '  "errors_detected": {\n'
             '    "spelling": <true/false>,\n'

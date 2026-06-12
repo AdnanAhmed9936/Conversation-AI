@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from nlp_agent import NLPAgent
-from knowledge_base import fetch_information
-from response_generator import generate_response
+from backend.nlp_agent import NLPAgent
+from backend.knowledge_base import fetch_information
+from backend.response_generator import generate_response
 import logging
 import requests
 import os
@@ -25,7 +25,7 @@ def call_groq_direct(user_text: str, detailed: bool = False) -> str:
     model = "llama-3.1-8b-instant"
     api_url = "https://api.groq.com/openai/v1/chat/completions"
     
-    system_prompt = "You are a helpful assistant."
+    system_prompt = "You are a helpful assistant. Keep your response short, precise, and concise (usually under 2-3 sentences or a very brief list)."
     if detailed:
         system_prompt = "You are a helpful assistant. Provide a detailed, comprehensive, and in-depth explanation to the user's query."
         
@@ -105,8 +105,9 @@ def process_input():
         # 2. Knowledge Base Module
         wiki_data = None
         is_greeting_or_smalltalk = "greet" in intent.lower() or "small talk" in intent.lower()
+        is_real_time = intent.lower() == "real-time" or not result.get('wikipedia_search_query')
         
-        if not is_greeting_or_smalltalk:
+        if not is_greeting_or_smalltalk and not is_real_time:
             try:
                 wiki_data = fetch_information(query, intent=intent)
             except Exception as e:
